@@ -7,7 +7,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.pageseeder.berlioz.util.FileUtils;
 import org.pageseeder.berlioz.util.MD5;
 import org.pageseeder.flint.IndexException;
 import org.pageseeder.flint.IndexManager;
@@ -87,7 +86,16 @@ public final class IndexMaster {
   }
 
   public boolean isInIndex(File file) {
-    return FileUtils.contains(_contentRoot, file);
+    if (file == null) return false;
+    try {
+      String prefix = this._contentRoot.getCanonicalPath();
+      return file.getCanonicalPath().startsWith(prefix);
+    } catch (IOException | SecurityException ex) {
+      LOGGER.error("Failed to compute canonical path for file {}, trying with absolute path", file.getAbsolutePath(), ex);
+      // trying with absolute path
+      String prefix = this._contentRoot.getAbsolutePath();
+      return file.getAbsolutePath().startsWith(prefix);
+    }
   }
 
   public LuceneLocalIndex getIndex() {
