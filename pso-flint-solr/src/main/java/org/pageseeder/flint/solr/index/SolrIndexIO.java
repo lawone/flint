@@ -46,7 +46,8 @@ public class SolrIndexIO implements IndexIO {
     // use cloud?
     Collection<String> zkhosts = config.getZKHosts();
     if (zkhosts != null && !zkhosts.isEmpty()) {
-      this._client = new CloudSolrClient.Builder().withZkHost(zkhosts).build();
+      //this._client = new CloudSolrClient.Builder().withZkHost(zkhosts).build();
+      this._client = new CloudSolrClient.Builder((List<String>) zkhosts).build();
     } else {
       this._client = new HttpSolrClient.Builder(config.getServerURL()).allowCompression(true).build();
     }
@@ -67,6 +68,7 @@ public class SolrIndexIO implements IndexIO {
 	  long lastModifiedTime = -1;
 	  LukeRequest request = new LukeRequest();
 	  request.setShowSchema(true);
+	 
 	  
 	  try {
 		  LukeResponse response = request.process(this._client, this._collection);
@@ -80,10 +82,10 @@ public class SolrIndexIO implements IndexIO {
 			  }
 		  }
 
-	  } catch ( SolrServerException | IOException ex) {
+	  } catch ( SolrServerException | IOException | NullPointerException ex) {
 		  LOGGER.error("Cannot get last modified time ", ex);
 	  }
-
+	  
 	  return lastModifiedTime;
   }
 

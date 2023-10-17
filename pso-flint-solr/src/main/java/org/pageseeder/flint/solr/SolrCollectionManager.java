@@ -9,13 +9,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
-import org.apache.solr.client.solrj.impl.HttpSolrClient.RemoteSolrException;
 import org.apache.solr.client.solrj.request.CollectionAdminRequest;
 import org.apache.solr.client.solrj.response.CollectionAdminResponse;
 import org.apache.solr.common.util.NamedList;
@@ -59,11 +60,12 @@ public class SolrCollectionManager {
     // build client to connect to solr
     SolrFlintConfig config = SolrFlintConfig.getInstance();
     // use cloud?
-    Collection<String> zkhosts = config.getZKHosts();
+    List<String> zkhosts = (List<String>) config.getZKHosts();
     if (zkhosts != null && !zkhosts.isEmpty()) {
       this.defaultShards = zkhosts.size();
       this.defaultReplicas = 1;
-      this._solr = new CloudSolrClient.Builder().withZkHost(zkhosts).build();
+     // this._solr = new CloudSolrClient.Builder().withZkHost(zkhosts).build();
+      this._solr = new CloudSolrClient.Builder(zkhosts).build();
     } else {
       this.defaultShards = 1;
       this.defaultReplicas = 1;
@@ -74,7 +76,7 @@ public class SolrCollectionManager {
   public SolrCollectionManager(Collection<String> zkhosts) {
     this.defaultShards = zkhosts.size();
     this.defaultReplicas = 1;
-    this._solr = new CloudSolrClient.Builder().withZkHost(zkhosts).build();
+    this._solr = new CloudSolrClient.Builder((List<String>) zkhosts).build();;
   }
 
   public SolrCollectionManager(String url) {
@@ -89,7 +91,7 @@ public class SolrCollectionManager {
     try {
       CollectionAdminRequest.List req = new CollectionAdminRequest.List();
       response = req.process(this._solr);
-    } catch (RemoteSolrException | SolrServerException | IOException ex) {
+    } catch (  IOException | SolrServerException ex) {
       if (ex.getCause() != null && ex.getCause() instanceof ConnectException) throw new SolrFlintException(true);
       throw new SolrFlintException("Failed to list Solr collections", ex);
     }
@@ -103,7 +105,7 @@ public class SolrCollectionManager {
     try {
       CollectionAdminRequest.ClusterStatus req = CollectionAdminRequest.getClusterStatus();
       response = req.process(this._solr);
-    } catch (RemoteSolrException | SolrServerException | IOException ex) {
+    } catch ( SolrServerException | IOException ex) {
       if (ex.getCause() != null && ex.getCause() instanceof ConnectException) throw new SolrFlintException(true);
       throw new SolrFlintException("Failed to list Solr collections", ex);
     }
@@ -164,7 +166,7 @@ public class SolrCollectionManager {
         if (atts.containsKey(MAX_SHARDS_PER_NODE)) {
           String m = atts.remove(MAX_SHARDS_PER_NODE);
           try {
-            create.setMaxShardsPerNode(Integer.parseInt(m));
+            create.setShards(m);
           } catch (NumberFormatException ex) {
             LOGGER.error("Ignoring invalid max shards per node {} for collection {}", m, name);
           }

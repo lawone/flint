@@ -14,7 +14,8 @@ public class SolrUtils {
     for (FlintDocument fdoc : docs) {
       SolrInputDocument sdoc = new SolrInputDocument();
       for (FlintField field : fdoc.fields()) {
-        sdoc.addField(field.name(), field.value(), field.boost());
+       // sdoc.addField(field.name(), field.value(), field.boost());
+        sdoc.addField(field.name(), field.value());
       }
       sdocs.add(sdoc);
     }

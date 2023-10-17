@@ -4,7 +4,7 @@ dependencies {
     rootProject,
     'org.slf4j:slf4j-api:1.7.21',
     'org.pageseeder.xmlwriter:pso-xmlwriter:1.0.2',
-    'org.apache.solr:solr-solrj:6.5.1'
+    'org.apache.solr:solr-solrj:9.3.0'
   )
 
   testImplementation (
