@@ -30,6 +30,7 @@ import org.pageseeder.flint.solr.SolrFlintException;
 import org.pageseeder.flint.solr.SolrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.concurrent.TimeUnit;
 
 public class SolrIndexIO implements IndexIO {
 
@@ -49,7 +50,13 @@ public class SolrIndexIO implements IndexIO {
       //this._client = new CloudSolrClient.Builder().withZkHost(zkhosts).build();
       this._client = new CloudSolrClient.Builder((List<String>) zkhosts).build();
     } else {
-      this._client = new HttpSolrClient.Builder(config.getServerURL()).allowCompression(true).build();
+      //this._client = new HttpSolrClient.Builder(config.getServerURL()).allowCompression(true).build();
+    	this._client = new HttpSolrClient.Builder(config.getServerURL())
+    		    .allowCompression(true)
+    		    .withConnectionTimeout(160000, TimeUnit.MILLISECONDS)
+    		    .withSocketTimeout(60000, TimeUnit.MILLISECONDS)
+    		    .build();
+
     }
   }
 

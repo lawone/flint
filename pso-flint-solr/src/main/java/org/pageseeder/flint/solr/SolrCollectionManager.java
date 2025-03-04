@@ -25,6 +25,7 @@ import org.pageseeder.xmlwriter.XMLStringWriter;
 import org.pageseeder.xmlwriter.XMLWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A server level manager to deal with the collections.
@@ -69,7 +70,13 @@ public class SolrCollectionManager {
     } else {
       this.defaultShards = 1;
       this.defaultReplicas = 1;
-      this._solr = new HttpSolrClient.Builder(config.getServerURL()).allowCompression(true).build();
+      //this._solr = new HttpSolrClient.Builder(config.getServerURL()).allowCompression(true).build();
+      this._solr = new HttpSolrClient.Builder(config.getServerURL())
+    		    .allowCompression(true)
+    		    .withConnectionTimeout(160000, TimeUnit.MILLISECONDS)
+    		    .withSocketTimeout(60000, TimeUnit.MILLISECONDS)
+    		    .build();
+
     }
   }
 
@@ -82,7 +89,13 @@ public class SolrCollectionManager {
   public SolrCollectionManager(String url) {
     this.defaultShards = 1;
     this.defaultReplicas = 1;
-    this._solr = new HttpSolrClient.Builder(url).allowCompression(true).build();
+   // this._solr = new HttpSolrClient.Builder(url).allowCompression(true).build();
+    this._solr = new HttpSolrClient.Builder(url)
+    	    .allowCompression(true)
+    	    .withConnectionTimeout(160000, TimeUnit.MILLISECONDS)
+    	    .withSocketTimeout(60000, TimeUnit.MILLISECONDS)
+    	    .build();
+
   }
 
   @SuppressWarnings("unchecked")
