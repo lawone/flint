@@ -12,7 +12,7 @@ import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.util.NamedList;
 import org.pageseeder.flint.Index;
 import org.pageseeder.flint.solr.index.SolrIndexIO;
-
+import org.apache.solr.common.params.ModifiableSolrParams;
 public class AutoSuggest {
 
   private final SolrIndexIO _indexio;
@@ -63,8 +63,13 @@ public class AutoSuggest {
     if (with != null) {
       params.add("suggest.cfq",      with);
     }
+    
+    ModifiableSolrParams solrParams = new ModifiableSolrParams();
+    for (Map.Entry<String, String> entry : params) {
+        solrParams.set(entry.getKey(), entry.getValue());
+    }
     // build request
-    GenericSolrRequest suggest = new GenericSolrRequest(METHOD.GET, "/suggest", SolrParams.toSolrParams(params));
+    GenericSolrRequest suggest = new GenericSolrRequest(METHOD.GET, "/suggest", solrParams);
     SolrResponse response = this._indexio.process(suggest);
     
     if (response != null && response.getResponse() != null) {
