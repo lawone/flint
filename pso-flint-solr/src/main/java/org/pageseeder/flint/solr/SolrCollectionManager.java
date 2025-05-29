@@ -122,7 +122,7 @@ public class SolrCollectionManager {
 
 	                // Use ConcurrentUpdateHttp2SolrClient
 	                this._solr = new ConcurrentUpdateHttp2SolrClient.Builder(leaderBaseUrl, http2SolrClient)
-	                        .withThreadCount(4)
+	                        .withThreadCount(5)
 	                        .withQueueSize(50)
 	                        .build();
 	                
@@ -156,7 +156,7 @@ public class SolrCollectionManager {
 
 	        //  Pass Http2SolrClient to ConcurrentUpdateHttp2SolrClient
 	        this._solr = new ConcurrentUpdateHttp2SolrClient.Builder(standaloneUrl, http2SolrClient)
-	                .withThreadCount(4)
+	                .withThreadCount(5)
 	                .withQueueSize(50)
 	                .build();
 	        
@@ -216,7 +216,7 @@ public class SolrCollectionManager {
 
 	            //Use ConcurrentUpdateHttp2SolrClient
 	            this._solr = new ConcurrentUpdateHttp2SolrClient.Builder(leaderBaseUrl, http2SolrClient)
-	                    .withThreadCount(4)
+	                    .withThreadCount(5)
 	                    .withQueueSize(50)
 	                    .build();
 	        } else {
@@ -248,7 +248,7 @@ public class SolrCollectionManager {
 
 	    // Use ConcurrentUpdateHttp2SolrClient
 	    this._solr = new ConcurrentUpdateHttp2SolrClient.Builder(url, http2SolrClient)
-	            .withThreadCount(4)
+	            .withThreadCount(5)
 	            .withQueueSize(50)
 	            .build();
 	}

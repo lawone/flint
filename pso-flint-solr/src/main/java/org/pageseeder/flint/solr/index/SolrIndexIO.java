@@ -112,7 +112,7 @@ public class SolrIndexIO implements IndexIO {
 
 	                // Use ConcurrentUpdateHttp2SolrClient
 	                this._client = new ConcurrentUpdateHttp2SolrClient.Builder(leaderBaseUrl, http2SolrClient)
-	                        .withThreadCount(4)
+	                        .withThreadCount(5)
 	                        .withQueueSize(50)
 	                        .build();
 
@@ -142,7 +142,7 @@ public class SolrIndexIO implements IndexIO {
 
 	        // Use ConcurrentUpdateHttp2SolrClient
 	        this._client = new ConcurrentUpdateHttp2SolrClient.Builder(standaloneUrl, http2SolrClient)
-	                .withThreadCount(4)
+	                .withThreadCount(5)
 	                .withQueueSize(50)
 	                .build();
 
