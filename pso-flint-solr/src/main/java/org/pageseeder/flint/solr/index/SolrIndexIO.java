@@ -15,10 +15,8 @@ import org.apache.solr.client.solrj.SolrResponse;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
-import org.apache.solr.client.solrj.impl.ConcurrentUpdateHttp2SolrClient;
-import org.apache.solr.client.solrj.impl.CloudHttp2SolrClient;
+import org.apache.solr.client.solrj.impl.ConcurrentUpdateSolrClient;
 import org.apache.solr.client.solrj.impl.ZkClientClusterStateProvider;
-import org.apache.solr.client.solrj.impl.Http2SolrClient;
 import org.apache.solr.client.solrj.request.QueryRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
@@ -104,16 +102,11 @@ public class SolrIndexIO implements IndexIO {
 	    	        }
 	                LOGGER.info("URL for solr leader node: " + leaderBaseUrl);
 
-	                //Create Http2SolrClient with correct timeout settings
-	                Http2SolrClient http2SolrClient = new Http2SolrClient.Builder(leaderBaseUrl)
-	                        .withConnectionTimeout(160, TimeUnit.SECONDS)
-	                        .withRequestTimeout(60, TimeUnit.SECONDS)
-	                        .build();
-
-	                // Use ConcurrentUpdateHttp2SolrClient
-	                this._client = new ConcurrentUpdateHttp2SolrClient.Builder(leaderBaseUrl, http2SolrClient)
-	                        .withThreadCount(5)
+	                this._client = new ConcurrentUpdateSolrClient.Builder(leaderBaseUrl)
+	                        .withConnectionTimeout(160_000)  // 160 seconds in milliseconds
+	                        .withSocketTimeout(60_000)       // 60 seconds in milliseconds
 	                        .withQueueSize(50)
+	                        .withThreadCount(5)
 	                        .build();
 
 	               
@@ -134,16 +127,12 @@ public class SolrIndexIO implements IndexIO {
 	        	standaloneUrl=standaloneUrl.substring(0, standaloneUrl.length()-1);
 	        }
 	        LOGGER.info("Final standalone Solr URL: " + standaloneUrl);
-	        // Create Http2SolrClient with correct timeout settings
-	        Http2SolrClient http2SolrClient = new Http2SolrClient.Builder(standaloneUrl)
-	                .withConnectionTimeout(160, TimeUnit.SECONDS)
-	                .withRequestTimeout(60, TimeUnit.SECONDS)
-	                .build();
-
-	        // Use ConcurrentUpdateHttp2SolrClient
-	        this._client = new ConcurrentUpdateHttp2SolrClient.Builder(standaloneUrl, http2SolrClient)
-	                .withThreadCount(5)
+	        
+	        this._client = new ConcurrentUpdateSolrClient.Builder(standaloneUrl)
+	                .withConnectionTimeout(160_000)  // 160 seconds in milliseconds
+	                .withSocketTimeout(60_000)       // 60 seconds in milliseconds
 	                .withQueueSize(50)
+	                .withThreadCount(5)
 	                .build();
 
 	    	}catch(Exception e) {

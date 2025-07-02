@@ -18,12 +18,11 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
-import org.apache.solr.client.solrj.impl.Http2SolrClient;
 import org.apache.solr.client.solrj.impl.ZkClientClusterStateProvider;
 import org.apache.solr.client.solrj.request.CollectionAdminRequest;
 import org.apache.solr.client.solrj.response.CollectionAdminResponse;
 import org.apache.solr.client.solrj.impl.BinaryResponseParser;
-import org.apache.solr.client.solrj.impl.ConcurrentUpdateHttp2SolrClient;
+import org.apache.solr.client.solrj.impl.ConcurrentUpdateSolrClient;
 import org.apache.solr.client.solrj.request.RequestWriter;
 import org.apache.solr.common.cloud.ClusterState;
 import org.apache.solr.common.cloud.Slice;
@@ -113,17 +112,12 @@ public class SolrCollectionManager {
 	    	        }
 					
 	                LOGGER.info("URL for solr leader node: " + leaderBaseUrl);
-	                // Create Http2SolrClient
-	                Http2SolrClient http2SolrClient = new Http2SolrClient.Builder(leaderBaseUrl)
-	                        .withConnectionTimeout(160, TimeUnit.SECONDS)
-	                        .withRequestTimeout(60, TimeUnit.SECONDS)//No socketTimeout method. Need to handle through this property
-	                        .build();
-	             
-
-	                // Use ConcurrentUpdateHttp2SolrClient
-	                this._solr = new ConcurrentUpdateHttp2SolrClient.Builder(leaderBaseUrl, http2SolrClient)
-	                        .withThreadCount(5)
+	                
+	                this._solr = new ConcurrentUpdateSolrClient.Builder(leaderBaseUrl)
+	                        .withConnectionTimeout(160_000)
+	                        .withSocketTimeout(60_000)
 	                        .withQueueSize(50)
+	                        .withThreadCount(5)
 	                        .build();
 	                
 	              
@@ -148,16 +142,11 @@ public class SolrCollectionManager {
 	        }
 	        LOGGER.info("Final standalone Solr URL: " + standaloneUrl);
 
-	        //  Create Http2SolrClient
-	        Http2SolrClient http2SolrClient = new Http2SolrClient.Builder(standaloneUrl)
-	                .withConnectionTimeout(160, TimeUnit.SECONDS)
-	                .withRequestTimeout(60, TimeUnit.SECONDS)
-	                .build();
-
-	        //  Pass Http2SolrClient to ConcurrentUpdateHttp2SolrClient
-	        this._solr = new ConcurrentUpdateHttp2SolrClient.Builder(standaloneUrl, http2SolrClient)
-	                .withThreadCount(5)
+	        this._solr = new ConcurrentUpdateSolrClient.Builder(standaloneUrl)
+	                .withConnectionTimeout(160_000)
+	                .withSocketTimeout(60_000)
 	                .withQueueSize(50)
+	                .withThreadCount(5)
 	                .build();
 	        
 	       
@@ -208,17 +197,13 @@ public class SolrCollectionManager {
 
 	            LOGGER.info("Final Leader Solr URL: " + leaderBaseUrl);
 
-	            // Create Http2SolrClient
-	            Http2SolrClient http2SolrClient = new Http2SolrClient.Builder(leaderBaseUrl)
-	                    .withConnectionTimeout(160, TimeUnit.SECONDS)
-	                    .withRequestTimeout(60, TimeUnit.SECONDS)
-	                    .build();
-
-	            //Use ConcurrentUpdateHttp2SolrClient
-	            this._solr = new ConcurrentUpdateHttp2SolrClient.Builder(leaderBaseUrl, http2SolrClient)
-	                    .withThreadCount(5)
+	            this._solr = new ConcurrentUpdateSolrClient.Builder(leaderBaseUrl)
+	                    .withConnectionTimeout(160_000)
+	                    .withSocketTimeout(60_000)
 	                    .withQueueSize(50)
+	                    .withThreadCount(5)
 	                    .build();
+	            
 	        } else {
 	        	LOGGER.error("ClusterStateProvider is not an instance of ZkClientClusterStateProvider");
 	            throw new RuntimeException("ClusterStateProvider is not an instance of ZkClientClusterStateProvider");
@@ -240,16 +225,11 @@ public class SolrCollectionManager {
 	    this.defaultReplicas = 1;
 
 
-	    // Create Http2SolrClient
-	    Http2SolrClient http2SolrClient = new Http2SolrClient.Builder(url)
-	            .withConnectionTimeout(160, TimeUnit.SECONDS)
-	            .withRequestTimeout(60, TimeUnit.SECONDS)
-	            .build();
-
-	    // Use ConcurrentUpdateHttp2SolrClient
-	    this._solr = new ConcurrentUpdateHttp2SolrClient.Builder(url, http2SolrClient)
-	            .withThreadCount(5)
+	    this._solr = new ConcurrentUpdateSolrClient.Builder(url)
+	            .withConnectionTimeout(160_000)
+	            .withSocketTimeout(60_000)
 	            .withQueueSize(50)
+	            .withThreadCount(5)
 	            .build();
 	}
   
